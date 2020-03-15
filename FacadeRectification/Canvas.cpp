@@ -29,10 +29,27 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::mousePressEvent(QMouseEvent* e) {
-	if (points.size() >= 4) points.clear();
+	if (points.size() >= 5) points.clear();
 
+	if (points.empty()) {
+		points.push_back(cv::Point2f((float)e->x() / image.width(), (float)e->y() / image.height()));
+	}
+	else {
+		points.back() = (cv::Point2f((float)e->x() / image.width(), (float)e->y() / image.height()));
+	}
 	points.push_back(cv::Point2f((float)e->x() / image.width(), (float)e->y() / image.height()));
+	
+	if (points.size() == 2) setMouseTracking(true);
+	if (points.size() == 5) {
+		setMouseTracking(false);
+		points.pop_back();
+	}
 
+	update();
+}
+
+void Canvas::mouseMoveEvent(QMouseEvent* e) {
+	points.back() = cv::Point2f((float)e->x() / image.width(), (float)e->y() / image.height());
 	update();
 }
 
